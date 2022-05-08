@@ -1,0 +1,38 @@
+version: "2.1"
+
+networks:
+  rede_app:
+
+volumes:
+  vol_app:  
+
+services:
+  mongo:
+    image: mongo:5.0.8
+    container_name: banco_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopwd
+    expose:
+      - "27017"
+    networks: 
+      - rede_app
+    volumes:
+      - vol_app:/data/db
+    
+  app_python:
+    image: felipejm91/rotten-potatoes:v1
+    container_name: app_python
+    depends_on:
+      - mongo
+    ports:
+      - "8080:5000"
+    environment:
+      MONGODB_DB: admin
+      MONGODB_HOST: banco_mongo
+      MONGODB_PORT: "27017"
+      MONGODB_USERNAME: mongouser
+      MONGODB_PASSWORD: mongopwd
+    networks:
+      - rede_app
+    
